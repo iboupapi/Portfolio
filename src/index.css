@@ -29,7 +29,27 @@
     }
 
     /* Custom cursor */
-    .cursor {
+    /* Remplace l'ancien .cursor à l'intérieur du typewriter par ceci */
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+    .typewriter {
+  display: inline-block;
+  min-width: 320px;
+  will-change: contents;
+}
+
+.cursor {
       width: 12px; height: 12px;
       background: var(--accent);
       border-radius: 50%;
@@ -40,6 +60,21 @@
       transition: transform 0.1s;
       mix-blend-mode: screen;
     }
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
     /* Hero photo */
     .hero-photo-wrap {
       position: absolute;
@@ -92,7 +127,92 @@
       transition: transform 0.15s ease, width 0.2s, height 0.2s, opacity 0.2s;
       opacity: 0.5;
     }
+    /* ============================================================
+   WORD CAROUSEL — à ajouter dans ton fichier CSS global
+   (ou dans le fichier CSS de Hero)
+   ============================================================
 
+   ⚠️  Remplace la valeur de --hero-bg par la couleur exacte
+       de ton fond de section hero (ex: #0d0d14, #0a0a12, etc.)
+       pour que les dégradés de fondu soient invisibles.
+   ============================================================ */
+
+.word-carousel {
+  position: relative;
+  display: inline-block;
+  height: 1.2em;
+  overflow: hidden;
+  vertical-align: bottom;      /* aligne sur la ligne de base du texte */
+}
+
+/* Piste qui défile verticalement */
+.word-track {
+  display: flex;
+  flex-direction: column;
+  /* 5 mots + 1 doublon = 6 positions.
+     Durée : 2s par mot × 5 = 10s total.
+     Le cubic-bezier donne un arrêt net entre deux glissements fluides. */
+  animation: slide-words 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Chaque mot occupe exactement 1.2em de hauteur */
+.word-track span {
+  display: block;
+  height: 1.2em;
+  line-height: 1.2em;
+  white-space: nowrap;
+
+  /* Dégradé sur le texte — ajuste les couleurs à ta charte */
+  background: linear-gradient(135deg, #7c6af7, #4fa3e8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Fondu haut : cache le mot qui arrive */
+.word-fade-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  /* Remplace #0d0d14 par ta couleur de fond */
+  background: linear-gradient(to bottom, #0d0d14, transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Fondu bas : cache le mot qui part */
+.word-fade-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  /* Remplace #0d0d14 par ta couleur de fond */
+  background: linear-gradient(to top, #0d0d14, transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Keyframes : 5 mots × (pause 15% + glissement 5%) = 100%
+   Le 6e keyframe revient à 0 pour boucler proprement.           */
+@keyframes slide-words {
+  0%,  15% { transform: translateY(0); }
+  20%, 35% { transform: translateY(-1.2em); }
+  40%, 55% { transform: translateY(-2.4em); }
+  60%, 75% { transform: translateY(-3.6em); }
+  80%, 95% { transform: translateY(-4.8em); }
+  100%     { transform: translateY(0); }
+}
+
+/* Accessibilité : réduit le mouvement pour les utilisateurs
+   qui ont activé "Réduire les animations" dans leur OS */
+@media (prefers-reduced-motion: reduce) {
+  .word-track {
+    animation: none;
+  }
+}
     /* Scanlines overlay */
     body::before {
       content: '';
@@ -248,6 +368,18 @@
       animation: fadeUp 0.6s 0.2s ease both;
     }
     .hero-title .highlight { color: var(--accent2); }
+
+    .typewriter {
+  border-right: 2px solid var(--accent);
+  padding-right: 4px;
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
     .hero-desc {
       font-family: 'Barlow', sans-serif;
       font-size: 1rem;
@@ -1132,10 +1264,14 @@
 
     /* REVEAL */
     .reveal {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal.animate {
+  opacity: 0;
+  transform: translateY(40px);
+}
     .reveal.visible {
       opacity: 1;
       transform: translateY(0);
